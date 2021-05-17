@@ -78,6 +78,29 @@ print("The reverse number is : {}".format(revs_number))
 
 
 
-5. 
+5. Write a program to print the 10 terms of following series :
+1,5,10,50,100,500,1000,........
+
+
+
+CODE : Python - Doubtful
+
+
+
+n = 10
+for i in range(1,3):
+  print(i,",",end='\t')
+  i = i*5
+  print(i,",",end='\t')
+  i = i*2
+  print(i,",",end="\t")
+
+  for i in range(i,n+1):
+
+  
+    i = i*5
+    print(i,",",end='\t')
+    i = i*2
+    print(i,",",end="\t")
 
 
