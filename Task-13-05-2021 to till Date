@@ -220,8 +220,45 @@ system.debug(revStr );
 
 
 
-5. Getting n numbers from a series:
 
+(26/05/2021)
+
+
+1. Find 10 random Accounts from your org and print it one by one. 
+
+
+
+public class SOQL1 {
+
+
+public static void GetRandom(){
+    
+Integer count = [SELECT COUNT() FROM Contact];
+Integer rand = Math.floor(Math.random() * count).intValue();
+Contact c = [SELECT Name FROM Contact LIMIT 1 OFFSET :rand];
+    
+System.debug(c);
+
+}
+    
+    
+}
+
+
+
+2. Find 10 Accounts which are created recently and print them one by one.
+
+
+public class SOQL2  {
+
+public static void displayAccounts(){
+List<Account> acc=[Select Id,Name from Account];
+for(Account a:acc){
+List<Contact> con=[Select LastName from contact where AccountId=:a.id];
+for(Contact c:con){
+if(con.size()>1){
+System.debug('AccountName '+''+a.Name+'RelatedContacts '+''+c.LastName);
+}}}}}
 
 
 
