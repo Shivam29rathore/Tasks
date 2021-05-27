@@ -262,3 +262,62 @@ System.debug('AccountName '+''+a.Name+'RelatedContacts '+''+c.LastName);
 
 
 
+
+
+
+
+
+(27/05/2021)
+
+
+
+1. Find all contacts related to give Account and print them one by one.
+
+public class SOQL3 {
+    public  Id accountid;
+    public  List<Account> lst_acc;
+   
+   public void contactFieldsConcat(Id accid){
+        accountid = accid;
+        string query ='select id, name, (select id, name from Contacts) from account where id =: '+accountid;
+        lst_acc = Database.query(query);
+        system.debug(lst_acc);
+}
+
+}
+
+
+
+
+2. 
+
+
+public class SOQL4 {
+    
+Integer numContacts = 0;
+Integer numOpps = 0;
+public void getOpps(){
+    
+List<Account> someListOfAccountIds;
+
+List<Account> targetAccounts = [SELECT Id, Name, (SELECT Id FROM Contacts), (SELECT Id FROM Opportunities) FROM Account WHERE Id IN :someListOfAccountIds];
+
+for(Account myAccount :targetAccounts){
+    
+    numContacts = myAccount.Contacts.size();
+    numOpps = myAccount.Opportunities.size();
+
+    
+
+}
+
+}
+}
+
+
+
+
+
+
+
+
