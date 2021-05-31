@@ -373,3 +373,102 @@ for (Account a : accounts) {
 }
 
 
+
+
+
+
+
+
+
+
+
+(31/05/2021)
+
+
+
+1. Create an apex class "CreateAccountRelatedRecords" and a static method with Name "CreateAccount" and write the logic to create 10 Accounts.
+
+
+public class CreateAccountRelatedRecords {
+    
+ public  static void CreateAccount(String name){
+     
+     
+ List<Account> lstTesting = new List<Account>();    
+ 
+       
+for(Integer i=1;i<=10;i++)
+{
+    
+Account a = new Account();
+a.name = name;
+lstTesting.add(a);
+}
+insert lstTesting;
+     
+       
+       
+       
+
+
+ }
+
+}
+
+
+
+
+
+2. Create a method "CreateContactsWithAccount" in class "CreateAccountRelatedRecords" which will create 10 Account with 5 contacts in each Account.
+
+
+
+public static AggregateResult[]  CreateContactsWithAccount(){
+        
+    return [SELECT accountid idsss, count(id) contactssss FROM Contact GROUP BY Accountid HAVING count(id) =5 ];
+        }
+    }
+
+
+
+
+
+
+3.  Create a method "CreateOppsWithAccount" in class "CreateAccountRelatedRecords" which will create 10 Account with 5 Opportunities in each Account.
+
+
+public  static AggregateResult[]  CreateOppsWithAccount(){
+        
+        return [SELECT accountid idsss, count(id) contactssss FROM Opportunity GROUP BY Accountid HAVING count(id) =5 ];
+        
+
+    
+    
+    }
+    
+    
+    
+    
+    
+4. Create a method "CalculateOppAmountSum" in class "CreateAccountRelatedRecords" which will calculate the total sum of amount of Opportunities of given Account.
+
+
+
+public static  double  CalculateOppAmountSum()
+        
+    {
+        
+double  grandTotal;
+AggregateResult[] groupedResults = [SELECT sum(Total_amount__c) sum FROM Opportunity];
+grandTotal = double.valueOf(groupedResults[0].get('sum'));
+    
+    
+ 
+    return grandTotal;
+    }
+    
+
+
+
+
+
