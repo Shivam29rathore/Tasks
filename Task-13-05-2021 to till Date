@@ -472,3 +472,78 @@ grandTotal = double.valueOf(groupedResults[0].get('sum'));
 
 
 
+
+
+
+
+(01/06/2021)
+
+
+
+1) Create a method "CreateCases" in class "CreateAccountRelatedRecords" which will create 5 case records with all fields fields in.
+
+
+
+public static  void CreateCases(List<Account> accounts){
+        
+        
+     
+       List<Case> casesToCreate = new List<Case>();
+
+       
+       for(Account acc:accounts){
+           
+           if(acc.Name == 'CreateCase'){
+              
+               Case caseToAdd = new Case();
+
+               caseToAdd.Name__c = 'Test';
+               caseToAdd.Custom_Field__c = 'Something';
+               casesToCreate.add(caseToAdd);}
+
+              
+
+    }
+           
+       }
+     
+
+
+
+
+2) Create a method "CreateReqNoOfContacts" in class "CreateAccountRelatedRecords" which will create 9 Account with suffix 1,2,3,4,5,6,7,8 and 9 in Account Name and susuffix number of Contacts for corresponding Account.
+
+
+
+public static void  CreateReqNoOfContacts(String name){
+        
+        
+ List<Account> listing = new List<Account>();    
+ 
+       
+for(Integer i=1;i<=9;i++)
+{
+    
+Account a = new Account();
+a.name = name + i;
+listing.add(a);
+}
+insert listing;
+     
+       
+       
+       
+
+
+        
+        
+
+    }
+     
+
+
+
+
+
+
+
