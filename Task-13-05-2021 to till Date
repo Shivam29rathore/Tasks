@@ -546,4 +546,32 @@ insert listing;
 
 
 
+(02/06/2021)
+
+
+
+1) Create a custom field "Send Welcome Email" (Checkbox) on Contact.
+Create a workflow to update the field "Send Welcome Email" to true if a new Contact is created with valid Account.
+
+
+
+2) Create a workflow which will send a welcome email to Contact's email address whenever a new contact is created with "Send Welcome Email" = true.
+
+Email Details :
+Subject - Welcome email - Test
+Body :
+
+Hi {Contact Name},
+
+This is welcome email for you. You are now part of {Account Name}.
+
+Person Details : 
+Name : {Contact Name}
+DOB : {Contact DOB}
+Company : {Account Name}
+Email : {Contact Email}
+
+
+Thanks
+
 
