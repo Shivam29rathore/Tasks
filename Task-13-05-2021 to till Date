@@ -575,3 +575,85 @@ Email : {Contact Email}
 Thanks
 
 
+
+
+
+
+
+
+(03/06/2021)
+
+
+
+1) Write a Batch Class (AccountUpdateBatch) to update the following fields :
+    1) NumberofEmployees - Total number of contacts related to that Account. If no related conatct is there then value should be 0.
+    2) Number of Opportunity- Total number of opportunity related to that Account. If no related opportunity is there then value should be 0.
+    
+
+CODE: 
+
+
+global class AccountUpdateBatch implements Database.Batchable<sObject>
+{
+global Database.QueryLocator start(Database.BatchableContext bc)
+{
+    return Database.getQueryLocator([select Id,(Select Id from Contacts),(Select Id from Opportunities) from Account]);
+    
+}
+    global void execute(Database.BatchableContext bc,List<account> acclist)
+    {
+        list<account> listaccount=new list<account>();
+        list<Account> accountlist=[select id,name,NumberOfEmployees,(select id from contacts),(Select Id from Opportunities)from account where id=:acclist];
+       
+    for(account acc:accountlist){
+        
+        Account ac1=new account();
+        if(acc.contacts.size()!=null){
+        ac1.id=acc.id;
+        ac1.NumberOfEmployees=acc.contacts.size();
+        listaccount.add(ac1);
+        }
+        else{
+            ac1.NumberOfEmployees=0;
+        }
+        if(acc.opportunities.size()!=null){
+            ac1.id=acc.id;
+            ac1.Number_Of_Opportunity__c=acc.Opportunities.size();
+        }
+        else{
+            ac1.Number_Of_Opportunity__c=0;
+        }
+        update listaccount;
+    }
+    }
+        global void finish(Database.BatchableContext bc)
+        {
+            
+        }
+   
+       
+}
+
+
+
+2. Write the schedular class of above Batch (AccountUpdateBatch) to schedule this batch every 10th of the month.
+
+
+
+CODE:
+
+global class AccountUpdateBatchScheduleclass implements Schedulable {
+ global void execute(SchedulableContext sc){
+       AccountUpdateBatch aubt=new AccountUpdateBatch();
+     database.executeBatch(aubt,10);
+       }
+}
+
+
+
+Anonymous Window 
+
+AccountUpdateBatchScheduleclass aubtsc=new AccountUpdateBatchScheduleclass();
+        String sch='0 0 0 10 * ?';
+        String jobId=system.Schedule('Schedule at every 10th of month',sch,aubtsc);
+
