@@ -656,4 +656,65 @@ Anonymous Window
 AccountUpdateBatchScheduleclass aubtsc=new AccountUpdateBatchScheduleclass();
         String sch='0 0 0 10 * ?';
         String jobId=system.Schedule('Schedule at every 10th of month',sch,aubtsc);
+        
+        
+        
+        
 
+
+(04/06/2021)
+
+
+
+1. Write a batch class to update IsReminderSet field to true when the DueDate is passed and task status is not completed.
+
+CODE:
+
+global class updateTask implements Database.Batchable<sObject>
+{
+    global Database.QueryLocator start(Database.BatchableContext bc){
+        system.debug([select IsReminderSet,ActivityDate,status from Task]);
+        return Database.getQueryLocator([select Subject,IsReminderSet,ActivityDate,status from Task]);
+        
+    }
+    global void execute(database.BatchableContext bc,list<Task> tasklist){
+        //Date duedate;
+        system.debug('list'+tasklist);
+        list<Task> tlist=new list<Task>();
+        list<Task> tlistquery=[select Subject,Id,IsReminderSet,ActivityDate,Status from Task where id In:tasklist];
+        system.debug(tlistquery);
+        for(task t:tlistquery){
+            system.debug(t.Subject);
+            if(t.status!='Completed'){
+                t.IsReminderSet=true;
+                tlist.add(t);
+                
+            }
+            update tlist;
+             
+        }
+        
+       
+    }
+    
+    global void finish(Database.BatchableContext bc){
+        
+    }
+}
+
+
+
+2. Write the schedular class of above Batch  to schedule this batch daily.
+
+
+global class updateTaskScheduler implements schedulable{
+global void execute(SchedulableContext sc){
+       updateTask ut=new updateTask();
+}
+}
+
+ANONYMOUS WINDOW
+
+updateTaskScheduler utsc=new updateTaskScheduler();
+        String sch='0 0 0 * * ?';
+        String jobId=system.Schedule('Schedule daily',sch,utsc);
