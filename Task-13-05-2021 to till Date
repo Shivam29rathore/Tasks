@@ -737,7 +737,7 @@ Write a trigger on Account to create default Contacts (Number of Contact = numbe
 CODE:
 
 
-trigger createdefaultcontact on Account (after insert,after update){
+trigger trigger1 on Account (after insert,after update){
    list<contact> listContact = new list<contact>();
      
     map<id,decimal> mapAcc = new map<id,decimal>();
@@ -781,7 +781,7 @@ insert listContact;
 CODE:
 
 
-trigger updateemployeesonaccount on Contact (after insert,after update) {
+trigger trigger2 on Contact (after insert,after update) {
 map<Id,list<Contact>> conmap=new map<Id,list<contact>>();
     for(Contact con:trigger.new){
         if(!conmap.containsKey(con.AccountId)){
