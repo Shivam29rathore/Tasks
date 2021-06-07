@@ -718,3 +718,86 @@ ANONYMOUS WINDOW
 updateTaskScheduler utsc=new updateTaskScheduler();
         String sch='0 0 0 * * ?';
         String jobId=system.Schedule('Schedule daily',sch,utsc);
+        
+        
+        
+        
+        
+        
+        
+(07/06/2021)
+
+
+
+1. Create a checkbox field (Name = Create Default Contacts) on Account.
+Write a trigger on Account to create default Contacts (Number of Contact = number of employees on Account) related to that Account if Create Default Contacts = true for that Account.
+
+
+
+CODE:
+
+
+trigger createdefaultcontact on Account (after insert,after update){
+   list<contact> listContact = new list<contact>();
+     
+    map<id,decimal> mapAcc = new map<id,decimal>();
+    if(Trigger.isafter && Trigger.isInsert){
+    for(Account acc:trigger.new){
+        if(acc.create_default_contact__c==true){ 
+        mapAcc.put(acc.id,acc.NumberOfEmployees);
+        }
+    }
+    }
+     
+    if(mapAcc.size()>0 && mapAcc!=null){
+         
+        for(Id accId:mapAcc.keyset()){
+             
+            for(integer i=0;i<mapAcc.get(accId);i++){
+                 
+                contact newContact=new contact();
+                 
+                newContact.accountid=accId;
+                 
+                newContact.lastname='contact'+i;
+                 
+                listContact.add(newContact);
+                 
+            }
+        }
+    }
+    if(listContact.size()>0){      
+insert listContact;
+    }  
+}
+
+
+   
+   
+   
+2.Write a trigger to update Account's Standard Field Employees whose value will equal to number of Contacts related to that Account.
+
+
+CODE:
+
+
+trigger updateemployeesonaccount on Contact (after insert,after update) {
+map<Id,list<Contact>> conmap=new map<Id,list<contact>>();
+    for(Contact con:trigger.new){
+        if(!conmap.containsKey(con.AccountId)){
+            conmap.put(con.AccountId, new list<contact>());
+        }
+        else{
+            conmap.get(con.AccountId).add(con);
+        }
+    }
+    list<account> listaccount=new list<account>();
+    list<Account> acclist=[select id,name,NumberOfEmployees,(select id from contacts)from account where id=:conmap.keySet()];
+    for(account acc:acclist){
+        Account ac1=new account();
+        ac1.id=acc.id;
+        ac1.NumberOfEmployees=acc.contacts.size();
+        listaccount.add(ac1);
+    }
+   update listaccount;
+}
