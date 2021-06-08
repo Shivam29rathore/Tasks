@@ -801,3 +801,98 @@ map<Id,list<Contact>> conmap=new map<Id,list<contact>>();
     }
    update listaccount;
 }
+
+
+
+
+
+
+
+
+(08/06/2021)
+
+
+1. Create a currency field "Total Amount" on Account and write a trigger to update that field whose value will be equal to sum of Amount of all opportunities related to that Account.
+
+CODE:
+
+trigger trigger3 on Opportunity (after insert,after update) {
+set<id> accids=new set<id>();
+    for(opportunity opp:trigger.new){
+        if(opp.AccountId!=null){
+            accids.add(opp.AccountId);
+        }
+    }
+    list<account> accountlist=new list<Account>();
+    map<Id,Decimal> mapamt=new map<Id,Decimal>();
+    list<opportunity> opplist=[select Id,Amount,AccountId from opportunity where AccountId In:accids];
+    for(Opportunity o:opplist){
+        Decimal Sum=0;
+        if(mapamt.containsKey(o.AccountId)){
+            sum=mapamt.get(o.AccountId);
+        }
+        if(o.Amount!=null){
+            sum=sum+o.Amount;
+        }
+        mapamt.put(o.AccountId,sum);
+    }
+    if(mapamt.size()>0){
+        for(Id i:mapamt.keySet()){
+            Account a=new Account();
+            a.id=i;
+            a.Total_Amount__c=mapamt.get(i);
+            accountlist.add(a);
+            }
+    }
+    if(accountlist.size()>0){
+        update accountlist;
+    }
+}
+
+
+
+
+
+2. Create an Number field (Total Products) on Account. Write a trigger to update that field whose value will be equal to number of OpportunityLineItems related to that Account.
+
+CODE:
+
+
+trigger trigger4 on OpportunityLineItem (after insert,after update) {
+    if(trigger.isInsert && trigger.isAfter){
+        map<Id,list<opportunityLineItem>> mapcount=new map<Id,list<opportunityLineItem>>();
+        for(opportunityLineItem oli:trigger.new){
+            if(!mapcount.containsKey(oli.OpportunityId))
+            {
+                mapcount.put(oli.opportunityId,new list<opportunityLineItem>());
+            }
+           
+            else{
+                mapcount.get(oli.OpportunityId).add(oli);
+                   }
+        }
+        List<OpportunityLineItem> olilist = new List<OpportunityLineItem>([SELECT Opportunity.AccountId FROM OpportunityLineItem WHERE Id IN: mapcount.keySet()]);
+Set<Id> accountIds = new Set<Id>();
+for(OpportunityLineItem o : olilist){
+   accountIds.add(o.Opportunity.AccountId);
+}
+        
+        list<AggregateResult> listofoli=[select count(Id) numberofoli from OpportunityLineItem where Opportunity.AccountId=:accountIds GROUP BY Opportunity.AccountId];
+        list<Account> acclist=new list<Account>();
+        for(AggregateResult arr:listofoli){
+            
+           Account a=new Account();
+            a.Id=arr.Id;
+        
+        a.Total_Products__c=listofoli.size();
+        acclist.add(a);
+        }
+        if(acclist.size()>0){
+            update acclist;
+        }
+    }
+}
+
+
+
+
