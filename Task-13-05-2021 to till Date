@@ -896,3 +896,119 @@ for(OpportunityLineItem o : olilist){
 
 
 
+
+
+
+(09/06/2021)
+
+
+
+1. Write a trigger to not allow to delete Account which has Open Opportunities. Error message should be :
+"Sorry ! You can't delete this Account as it has N number of open deals."
+
+Note:- N is the total number of Open Opportunities related to that Account.
+
+
+CODE:
+
+trigger trigger5 on Account (before delete) {
+  list<AggregateResult> oppRec = [SELECT Count(Id) oppsize FROM Opportunity Where AccountID =: trigger.old and isclosed=false];
+        integer N=integer.valueOf(oppRec[0].get('oppsize'));
+for (Account a : [SELECT Id FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity where isClosed=false) AND Id IN :Trigger.old]) { 
+        Trigger.oldMap.get(a.Id).addError('Sorry ! You cannot delete this Account as it has' + N + 'number of open deals');
+}   }
+
+
+
+
+
+
+2. Create a new field "High Priority Opp" (Lookup(Opp)) on Account and write a trigger to update this field with open opportunity which has maximum amount related to the account.
+
+
+CODE:
+
+
+trigger trigger6 on Opportunity (after insert,after update) {
+Set<Id> accIdSet = new Set<Id>();
+    Map<Id, Id> mapOfAccIdAndOppName = new Map<Id, Id>();
+    List<Account> accListToUpdate = new List<Account>();
+
+    for (Opportunity opp : Trigger.new){
+      if(opp.AccountId != null){
+        accIdSet.add(opp.AccountId); 
+      }
+    }
+list<Opportunity> opplist=[SELECT Name, Amount,opportunity.AccountId FROM Opportunity WHERE opportunity.AccountId IN: accIdSet and opportunity.isClosed=false ORDER BY Amount DESC nulls last];
+    system.debug('mapfAccidAndOppName'+ mapOfAccIdAndOppName);
+    system.debug('opplist of Name & amount' +opplist);
+    system.debug('accIdset'+accIdset);
+    for(Opportunity op: opplist){
+      if(!mapOfAccIdAndOppName.containsKey(op.AccountId) && op.Amount != NULL){
+        mapOfAccIdAndOppName.put(op.AccountId, op.Id);
+      }
+    }
+
+    if(!mapOfAccIdAndOppName.isEmpty()){
+      for(Id accId : mapOfAccIdAndOppName.keySet()){
+          Account acc=new Account();
+          acc.id=accid;
+          acc.High_Priority_Opp__c=mapOfAccIdAndOppName.get(accId);
+          accListToUpdate.add(acc);
+       // accListToUpdate.add(new Account(Id = accId, High_Priority_Opp__c = mapOfAccIdAndOppName.get(accId)));
+      }
+    }
+    if(!accListToUpdate.isEmpty()){
+      update accListToUpdate;
+    }
+}
+
+
+
+
+
+
+(10/06/2021)
+
+
+1)  Write a trigger to not allow creation of duplicate Account (On the basis of Account Name).
+
+METHOD 1:
+trigger trigger7 on Account (before insert) {
+set<String> accnames=new set<String>();
+    for(account acc:trigger.new){
+        accnames.add(acc.Name);
+    }
+    system.debug('set'+ accnames);
+    list<Account> acclist=new list<Account>();
+    acclist=[select Id,Name from Account where Name IN: accnames];
+       
+    for(Account acc:trigger.new){
+        if(acclist.size()>0){
+            acc.Name.addError('duplicate name');
+        }
+    }
+    system.debug('list'+acclist);
+    }
+    
+   METHOD 2 USING MAP:
+   
+ Map<String, Account> accMap = new Map<String, Account>();
+    for (Account acc : System.Trigger.new) {
+         if (accMap.containsKey(acc.Name)) {
+                acc.Name.addError('Another account has the ' + acc.Name + ' same name.');
+            } else {
+                accMap.put(acc.Name, acc);
+            }
+    }
+     list<Account> acclist=[SELECT Name FROM Account WHERE Name IN :accMap.KeySet()]; 
+    for (Account acc : acclist) {
+        Account newAcc = accMap.get(acc.Name);
+         newAcc.Name.addError('An account with this name ' + acc.Name + ' already exists.');
+                        }
+}
+    
+
+
+
+
