@@ -1012,3 +1012,42 @@ set<String> accnames=new set<String>();
 
 
 
+
+
+
+
+
+
+(14/06/2021)
+
+
+
+1) Create a custom object vehicle and its detail object car. ie. car is a child of vehicle. and add few other fields on both objects. Now, create a vf page using standard controller as vehicle and print vehicle details first using a pageblock and then the child records of vehicle ie. bike records in a pageblocktable.
+
+
+
+CODE:
+
+
+<apex:page standardController="Vehicle__c">
+    <apex:pageBlock title="Vehicle Details" >
+        <apex:outputField value="{!Vehicle__c.Billing_Date__c}"/><br/>
+        <apex:outputField value="{!Vehicle__c.Type__c}"/><br/>
+        <apex:outputField value="{!Vehicle__c.Colour__c}"/><br/>
+    </apex:pageBlock>
+    <apex:pageBlock>
+       <apex:pageBlockTable value="{!Vehicle__c.Cars__c}" var="car">
+        
+                <apex:column value="{!car.Colour__c}"/>
+           <apex:column value="{!car.Model__c}"/>
+           <apex:column value="{!car.Owner_name__c}"/>
+           <apex:column value="{!car.Price__c}"/>
+           <apex:column value="{!car.Vehicle__c}"/>
+                    
+        </apex:pageBlockTable>
+                           
+    
+    </apex:pageBlock>
+    
+</apex:page>
+
