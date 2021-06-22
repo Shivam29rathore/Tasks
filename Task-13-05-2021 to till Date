@@ -1051,3 +1051,68 @@ CODE:
     
 </apex:page>
 
+
+
+
+
+
+(17/06/2021)
+
+
+
+1)  Create a detail page of contact using contact standard fields using a standard controller and try to save the values.
+
+
+
+CODE:
+
+<apex:page standardController="Contact" >
+    <apex:form>
+        <apex:pageBlock title="Contact Details">
+            <apex:pageBlockSection>
+        
+        <apex:inputField value="{!Contact.FirstName}"/>
+        <apex:inputField value="{!Contact.LastName}"/>
+        <apex:inputField value="{!Contact.Email}"/>
+                 </apex:pageBlockSection>
+                <apex:pageBlockButtons>
+        <apex:commandButton action="{!Save}" value="save"/>
+               
+            </apex:pageBlockButtons>
+            </apex:pageBlock>
+    </apex:form>
+</apex:page>
+
+
+
+
+
+
+
+(22/06/2021)
+
+
+
+1) Create a tabpanel and add two tabs of opportunities and accounts and show an account and its related opportunities using an id in the url (use component guide for tabpanel creation)
+
+
+
+CODE :
+
+
+<apex:page standardController="Account">
+    <style>
+    .activeTab {background-color: #236FBD; color:white; background-image:none}
+    .inactiveTab { background-color: light-grey; color:black; background-image:none}
+    </style>
+    
+    
+   <apex:tabPanel switchType="ajax" id="tabpanel1" tabClass="activeTab" inactiveTabClass="inactiveTab">
+       <apex:tab label="Account">
+           <apex:detail/>
+       </apex:tab>
+       <apex:tab label="Opportunities">
+           <apex:relatedList list="Opportunities"/>
+       </apex:tab>
+    </apex:tabPanel>
+        </apex:page>
