@@ -1116,3 +1116,39 @@ CODE :
        </apex:tab>
     </apex:tabPanel>
         </apex:page>
+        
+        
+        
+        
+        
+
+
+
+(24/06/2021)
+
+
+
+1) Try to create the list view of contacts like the standard list view.
+
+
+
+CODE:
+
+
+<apex:page standardController="Contact" recordSetVar="con">
+    <apex:form>
+        <apex:pageBlock title="Contacts List">
+            Filter:
+            <apex:selectList value="{!filterid}">
+                <apex:selectOptions value="{!listViewOptions}"/>
+                <apex:actionSupport event="onchange"/>
+            </apex:selectList>
+            <apex:pageBlockTable value="{!con}" var="c">
+                <apex:column value="{!c.FirstName}"/>
+                <apex:column value="{!c.LastName}"/>
+                <apex:column value="{!c.Phone}"/>
+                <apex:column value="{!c.Account.Name}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
